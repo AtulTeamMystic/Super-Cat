@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <FrameworkPathOverride>C:\Program Files\Unity\Hub\Editor\6000.1.17f1\Editor\Data\MonoBleedingEdge\lib\mono\xbuild-frameworks\.NETFramework\v4.7.1</FrameworkPathOverride>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3270;MSB3277</MSBuildWarningsAsMessages>
+  </PropertyGroup>
+</Project>

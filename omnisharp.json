@@ -1,0 +1,19 @@
+{
+    "MsBuild": {
+        "LoadProjectsOnDemand": false,
+        "Properties": {
+            "MSBuildWarningsAsMessages": "MSB3270;MSB3277",
+            "ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch": "None"
+        }
+    },
+    "RoslynExtensionsOptions": {
+        "EnableAnalyzersSupport": false,
+        "EnableImportCompletion": true
+    },
+    "FormattingOptions": {
+        "EnableEditorConfigSupport": true
+    },
+    "DotNet": {
+        "EnablePackageRestore": false
+    }
+}

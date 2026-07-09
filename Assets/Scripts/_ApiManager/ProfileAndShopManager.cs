@@ -48,7 +48,7 @@ public class ProfileAndShopManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    [Header("------------------Profile Data------------------")] 
+    [Header("------------------Profile Data------------------")]
     [SerializeField] internal ProfileData _profileData = new ProfileData();
     #endregion
 
@@ -124,7 +124,7 @@ public class ProfileAndShopManager : MonoBehaviour
         public bool error;
     }
 
-    internal  UserCoins _userCoins = new UserCoins();
+    internal UserCoins _userCoins = new UserCoins();
     #endregion
 
     #region Buy Asset Data
@@ -222,7 +222,7 @@ public class ProfileAndShopManager : MonoBehaviour
         Dictionary<string, string> customHeader = new Dictionary<string, string>();
         customHeader.Add("token", loginToken);
 
-        this.CallGetAPI(url, delegate(UnityWebRequest www, string payload)
+        this.CallGetAPI(url, delegate (UnityWebRequest www, string payload)
         {
             if (www.error != null)
             {
@@ -241,12 +241,12 @@ public class ProfileAndShopManager : MonoBehaviour
                     DebugLog.Log("Scene 2");
                     ShopUIManager.instance.FetchGspBalance();
                 }
-                
+
             }
         }, customHeader: customHeader);
     }
     #endregion
-    
+
     #region In Game Coin Update Api Call
     internal void UpdateCoinsFromGame(int Coins)
     {
@@ -311,7 +311,7 @@ public class ProfileAndShopManager : MonoBehaviour
     }
 
     #endregion
-    
+
     #region Getting Game Assets From user Api Call
 
     internal void GetGameAssetsByUser()
@@ -332,7 +332,7 @@ public class ProfileAndShopManager : MonoBehaviour
                 this.Log($"UserAsset Api {resp}");
                 userAssetData = resp.CallUTFDeserialization<UserAssetData>();
                 AfterAssetPurchaseSuccess?.Invoke();
-                
+
             }
         }, customHeader: customHeader);
     }
