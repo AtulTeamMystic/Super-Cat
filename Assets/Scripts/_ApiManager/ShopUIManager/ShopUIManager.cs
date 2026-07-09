@@ -31,8 +31,6 @@ public class ShopUIManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        ProfileAndShopManager.instance.GetGspPriceInUsd();
-        ProfileAndShopManager.instance.GetGameAssetsByUser();
     }
 
 
@@ -45,11 +43,10 @@ public class ShopUIManager : MonoBehaviour
 
     internal void FetchGspBalance()
     {
-        double gspBalance = ProfileAndShopManager.instance._profileData.data.gspBalance;
-        gspBalance = Math.Floor(gspBalance * 100) / 100;
-        string formattedGspBalance = gspBalance.ToString("R");
-        
-        gspCount.text = formattedGspBalance;
+        if (gspCount != null)
+        {
+            gspCount.text = "0";
+        }
     }
 
     #endregion
@@ -58,10 +55,6 @@ public class ShopUIManager : MonoBehaviour
 
     internal void OpenConfirmationPanel(Action onConfirm)
     {
-        conversionPopUp.SetActive(true);
-        LeanTween.scale(conversionPopUp, new Vector3(1, 1, 1), 0.3f);
-        gspBuyConfirm.onClick.AddListener(delegate { onConfirm?.Invoke(); });
-
     }
     
     internal void OpenCoinBuyConfirmationPanel(Action onConfirm)
@@ -74,9 +67,6 @@ public class ShopUIManager : MonoBehaviour
 
     internal void CloseConfirmationPanel()
     {
-        LeanTween.scale(conversionPopUp, new Vector3(0, 0, 0), 0.3f);
-        conversionPopUp.SetActive(false);
-        gspBuyConfirm.onClick.RemoveAllListeners();
     }
     internal void CloseCoinBuyConfirmationPanel()
     {

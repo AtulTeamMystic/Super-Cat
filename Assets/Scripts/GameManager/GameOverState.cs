@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_ANALYTICS
@@ -36,7 +36,7 @@ public class GameOverState : AState
     {
         canvas.gameObject.SetActive(true);
 
-        miniLeaderboard.playerEntry.inputName.text = ProfileAndShopManager.instance._profileData.data.userName ;
+        miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
 		
 		miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
 		miniLeaderboard.Populate();
@@ -93,7 +93,6 @@ public class GameOverState : AState
         Camera.main.transform.position = new Vector3(0, 5.3f, -3);
 		manager.SwitchState("Loadout");
 		Debug.Log("Go to Loadout" + PlayerData.instance.coins);
-		ProfileAndShopManager.instance.UpdateCoinsFromGame(PlayerData.instance.coins);
         manager.GetPlayerEssentials();
 
     }
@@ -148,11 +147,11 @@ public class GameOverState : AState
     {
 		if(miniLeaderboard.playerEntry.inputName.text == "")
 		{
-			miniLeaderboard.playerEntry.inputName.text = ProfileAndShopManager.instance._profileData.data.userName;
+			miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
 		}
 		else
 		{
-			PlayerData.instance.previousName = ProfileAndShopManager.instance._profileData.data.userName;
+			PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
 		}
 
         PlayerData.instance.InsertScore(trackManager.score, miniLeaderboard.playerEntry.inputName.text );

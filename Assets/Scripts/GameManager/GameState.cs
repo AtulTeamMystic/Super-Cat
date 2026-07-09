@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -331,7 +331,6 @@ public class GameState : AState
         PlayerData.instance.Save();
         manager.GetPlayerEssentials();
         Debug.Log("Quit to Loadout" + PlayerData.instance.coins);
-        ProfileAndShopManager.instance.UpdateCoinsFromGame(PlayerData.instance.coins);
         manager.SwitchState ("Loadout");
 
 

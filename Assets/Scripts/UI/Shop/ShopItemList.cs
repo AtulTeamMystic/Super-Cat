@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -52,45 +52,19 @@ public class ShopItemList : ShopList
                     itm.countText.gameObject.SetActive(true);
                     itm.buyButton.onClick.AddListener(delegate
                         {
-                            if (c.GetPrice()>PlayerData.instance.coins && ProfileAndShopManager.instance._profileData.data.gspBalance<1)
+                            if (c.GetPrice() > PlayerData.instance.coins)
                             {
                                 StartCoroutine(ShopUIManager.instance.ShowBalanceWarnings());
                                 return;
                             }
                             ShopUIManager.instance.assetName.text = c.GetConsumableName();
-                            if (c.GetPrice() <= PlayerData.instance.coins)
-                            {
-                                DebugLog.Log($"Buying '{c.GetConsumableName()}' with coins");
-                                ShopUIManager.instance.OpenCoinBuyConfirmationPanel(delegate {
-                                    Buy(c);
-                                    ShopUIManager.instance.CloseCoinBuyConfirmationPanel();
-                                    onCoinShop?.Invoke();
-                                    StartCoroutine(UpdateItems(itm,c));
-                                });
-                            }
-                            else if (c.GetPrice() > PlayerData.instance.coins && ProfileAndShopManager.instance._profileData.data.gspBalance > 1)
-                            {
-                                ShopUIManager.instance.OpenConfirmationPanel(delegate
-                                {
-                                    ShopUIManager.instance.ConfirmBtnText.text = "Loading...";
-                                    ShopUIManager.instance.gspBuyConfirm.interactable = false;
-                                    ShopUIManager.instance.CloseButton.interactable = false;
-                                    ProfileAndShopManager.instance.BuyAssetsFromGame(c.GetConsumableName(),
-                                        c.GetConsumableId().ToString(), () =>
-                                        {
-                                            ProfileAndShopManager.instance.FetchProfileData();
-                                            ProfileAndShopManager.instance.GetGameAssetsByUser();
-                                            ShopUIManager.instance.CloseConfirmationPanel();
-                                            ShopUIManager.instance.ConfirmBtnText.text = "Confirm";
-                                            ShopUIManager.instance.gspBuyConfirm.interactable = true;
-                                            ShopUIManager.instance.CloseButton.interactable = true;
-                                            ProfileAndShopManager.AfterAssetPurchaseSuccess += delegate
-                                            {
-                                                StartCoroutine(UpdateItems(itm, c)); 
-                                            };
-                                        });
-                                });
-                            }
+                            DebugLog.Log($"Buying '{c.GetConsumableName()}' with coins");
+                            ShopUIManager.instance.OpenCoinBuyConfirmationPanel(delegate {
+                                Buy(c);
+                                ShopUIManager.instance.CloseCoinBuyConfirmationPanel();
+                                onCoinShop?.Invoke();
+                                StartCoroutine(UpdateItems(itm,c));
+                            });
                         });
                     
                     m_RefreshCallback += delegate () { StartCoroutine(UpdateItems(itm, c));};
@@ -107,21 +81,21 @@ public class ShopItemList : ShopList
         PlayerData.instance.consumables.TryGetValue(c.GetConsumableType(), out count);
         if (c.GetConsumableType() == Consumable.ConsumableType.COIN_MAG)
         {
-            itemList.countText.text = (_cc.magnetList.Count + _cc.c_MagnetList.Count).ToString();
+            itemList.countText.text = _cc.c_MagnetList.Count.ToString();
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.EXTRALIFE)
         {
-            itemList.countText.text = (_cc.extraLifeList.Count + _cc.c_ExtraLifeList.Count).ToString();
+            itemList.countText.text = _cc.c_ExtraLifeList.Count.ToString();
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.INVINCIBILITY)
         {
-            itemList.countText.text = (_cc.invinciblityList.Count + _cc.c_InvinciblityList.Count).ToString();
+            itemList.countText.text = _cc.c_InvinciblityList.Count.ToString();
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.SCORE_MULTIPLAYER)
         {
-            itemList.countText.text = (_cc.scoreMultiplierList.Count + _cc.c_ScoreMultiplierList.Count).ToString();
+            itemList.countText.text = _cc.c_ScoreMultiplierList.Count.ToString();
         }
-        if (c.GetPrice() > PlayerData.instance.coins && ProfileAndShopManager.instance._profileData.data.gspBalance < 1)
+        if (c.GetPrice() > PlayerData.instance.coins)
         {
             itemList.buyButton.interactable = false;
         }
@@ -133,20 +107,20 @@ public class ShopItemList : ShopList
     {
         if (c.GetConsumableType() == Consumable.ConsumableType.COIN_MAG)
         {
-            item.countText.text = (_cc.magnetList.Count + _cc.c_MagnetList.Count).ToString();
+            item.countText.text = _cc.c_MagnetList.Count.ToString();
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.EXTRALIFE)
         {
-            item.countText.text = (_cc.extraLifeList.Count + _cc.c_ExtraLifeList.Count).ToString();
+            item.countText.text = _cc.c_ExtraLifeList.Count.ToString();
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.INVINCIBILITY)
         {
-            item.countText.text = (_cc.invinciblityList.Count + _cc.c_InvinciblityList.Count).ToString();
+            item.countText.text = _cc.c_InvinciblityList.Count.ToString();
            
         } 
         if (c.GetConsumableType() == Consumable.ConsumableType.SCORE_MULTIPLAYER)
         {
-            item.countText.text = (_cc.scoreMultiplierList.Count + _cc.c_ScoreMultiplierList.Count).ToString();
+            item.countText.text = _cc.c_ScoreMultiplierList.Count.ToString();
         }
     }
 
@@ -166,7 +140,6 @@ public class ShopItemList : ShopList
         PlayerData.instance.premium -= c.GetPremiumCost();
         PlayerData.instance.Add(c.GetConsumableType());
         PlayerData.instance.Save();
-        ProfileAndShopManager.instance.UpdateCoinsFromGame(PlayerData.instance.coins);
 
 #if UNITY_ANALYTICS // Using Analytics Standard Events v0.3.0
         var transactionId = System.Guid.NewGuid().ToString();

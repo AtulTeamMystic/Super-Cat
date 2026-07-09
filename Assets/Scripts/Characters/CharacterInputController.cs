@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -20,7 +20,8 @@ public class CharacterInputController : MonoBehaviour
     static int s_JumpingSpeedHash = Animator.StringToHash("JumpSpeed");
     static int s_SlidingHash = Animator.StringToHash("Sliding");
 
-    [Space(20)] [Header("------------------Public Refrences------------------")]
+    [Space(20)]
+    [Header("------------------Public Refrences------------------")]
     public TrackManager trackManager;
 
     public Character character;
@@ -29,22 +30,26 @@ public class CharacterInputController : MonoBehaviour
     public float laneChangeSpeed = 1.0f;
 
 
-    [Space(20)] [Header("------------------Assets List------------------")] 
+    [Space(20)]
+    [Header("------------------Assets List------------------")]
     [SerializeField] internal List<Consumable> magnetList = new List<Consumable>();
     [SerializeField] internal List<Consumable> extraLifeList = new List<Consumable>();
     [SerializeField] internal List<Consumable> invinciblityList = new List<Consumable>();
     [SerializeField] internal List<Consumable> scoreMultiplierList = new List<Consumable>();
 
 
-    [Space(20)] 
-    [Header("------------------Coin Purchase Assets List------------------")] [SerializeField]
+    [Space(20)]
+    [Header("------------------Coin Purchase Assets List------------------")]
+    [SerializeField]
     internal List<Consumable> c_MagnetList = new List<Consumable>();
     [SerializeField] internal List<Consumable> c_ExtraLifeList = new List<Consumable>();
     [SerializeField] internal List<Consumable> c_InvinciblityList = new List<Consumable>();
     [SerializeField] internal List<Consumable> c_ScoreMultiplierList = new List<Consumable>();
 
 
-    [Space(20)] [Header("------------------Asset use Buttons------------------")] [SerializeField]
+    [Space(20)]
+    [Header("------------------Asset use Buttons------------------")]
+    [SerializeField]
     internal Button magnetPowerUp;
 
     [SerializeField] internal Button extraLifePowerUp;
@@ -52,18 +57,22 @@ public class CharacterInputController : MonoBehaviour
     [SerializeField] internal Button invinciblityPowerUp;
 
 
-    [Space(20)] [Header("------------------Asset Count Texts------------------")] [SerializeField]
+    [Space(20)]
+    [Header("------------------Asset Count Texts------------------")]
+    [SerializeField]
     TMP_Text magCount;
 
     [SerializeField] TMP_Text ExtraLifeCount;
     [SerializeField] TMP_Text ScoreMultiCount;
     [SerializeField] TMP_Text InvincibleCount;
 
-    [Space(20)] [Header("------------------Max Life Count------------------")]
+    [Space(20)]
+    [Header("------------------Max Life Count------------------")]
     public int maxLife = 3;
 
 
-    [Space(20)] [Header("------------------Current Consumable using------------------")]
+    [Space(20)]
+    [Header("------------------Current Consumable using------------------")]
     public Consumable inventory;
 
     public int coins
@@ -99,13 +108,15 @@ public class CharacterInputController : MonoBehaviour
         get { return m_Sliding; }
     }
 
-    [Space(20)] [Header("------------------ Controls------------------")]
+    [Space(20)]
+    [Header("------------------ Controls------------------")]
     public float jumpLength = 2.0f; // Distance jumped
 
     public float jumpHeight = 1.2f;
     public float slideLength = 2.0f;
 
-    [Space(20)] [Header("------------------Sound------------------")]
+    [Space(20)]
+    [Header("------------------Sound------------------")]
     public AudioClip slideSound;
 
     public AudioClip powerUpUseSound;
@@ -118,7 +129,9 @@ public class CharacterInputController : MonoBehaviour
     protected int m_Premium;
     protected int m_CurrentLife;
 
-    [Space(20)] [Header("------------------Active Consumeable------------------")] [SerializeField]
+    [Space(20)]
+    [Header("------------------Active Consumeable------------------")]
+    [SerializeField]
     protected List<Consumable> m_ActiveConsumables = new List<Consumable>();
 
     protected int m_ObstacleLayer;
@@ -148,70 +161,19 @@ public class CharacterInputController : MonoBehaviour
 
     private void OnEnable()
     {
-        ProfileAndShopManager.AfterAssetPurchaseSuccess += GetInventoryBuyedItems;
         ShopItemList.onCoinShop += GetCoinPurchasedInventories;
     }
 
 
     private void OnDisable()
     {
-        ProfileAndShopManager.AfterAssetPurchaseSuccess -= GetInventoryBuyedItems;
         ShopItemList.onCoinShop -= GetCoinPurchasedInventories;
     }
 
     private void Start()
     {
         InitButton();
-        GetInventoryBuyedItems();
         GetCoinPurchasedInventories();
-    }
-
-    private void GetInventoryBuyedItems()
-    {
-        magnetList.Clear();
-        extraLifeList.Clear();
-        invinciblityList.Clear();
-        scoreMultiplierList.Clear();
-        
-        foreach (var item in ProfileAndShopManager.instance.userAssetData.data)
-        {
-            switch (int.Parse(item.assetId))
-            {
-                case StaticData.MagnetID:
-                    for (int i = 0; i < item.remainingAssetsCount; i++)
-                    {
-                        Consumable c = ConsumableDatabase.GetConsumbale(Consumable.ConsumableType.COIN_MAG);
-                        magnetList.Add(c);
-                        magCount.text = (magnetList.Count + c_MagnetList.Count).ToString();
-                    }
-                    break;
-                case StaticData.ExtralifeId:
-                    for (int i = 0; i < item.remainingAssetsCount; i++)
-                    {
-                        Consumable c = ConsumableDatabase.GetConsumbale(Consumable.ConsumableType.EXTRALIFE);
-                        extraLifeList.Add(c);
-                        ExtraLifeCount.text = (extraLifeList.Count + c_ExtraLifeList.Count).ToString();
-                    }
-
-                    break;
-                case StaticData.InvincibltyId:
-                    for (int i = 0; i < item.remainingAssetsCount; i++)
-                    {
-                        Consumable c = ConsumableDatabase.GetConsumbale(Consumable.ConsumableType.INVINCIBILITY);
-                        invinciblityList.Add(c);
-                        InvincibleCount.text = (invinciblityList.Count + c_InvinciblityList.Count).ToString();
-                    }
-                    break;
-                case StaticData.ScoreMultipierId:
-                    for (int i = 0; i < item.remainingAssetsCount; i++)
-                    {
-                        Consumable c = ConsumableDatabase.GetConsumbale(Consumable.ConsumableType.SCORE_MULTIPLAYER);
-                        scoreMultiplierList.Add(c);
-                        ScoreMultiCount.text = (scoreMultiplierList.Count + c_ScoreMultiplierList.Count).ToString();
-                    }
-                    break;
-            }
-        }
     }
 
     void GetCoinPurchasedInventories()
@@ -219,8 +181,8 @@ public class CharacterInputController : MonoBehaviour
         c_InvinciblityList.Clear();
         c_MagnetList.Clear();
         c_ExtraLifeList.Clear();
-        c_ScoreMultiplierList.Clear();       
-        
+        c_ScoreMultiplierList.Clear();
+
         foreach (var item in PlayerData.instance.consumables)
         {
             Consumable c = ConsumableDatabase.GetConsumbale(item.Key);
@@ -230,45 +192,38 @@ public class CharacterInputController : MonoBehaviour
                 {
                     case Consumable.ConsumableType.COIN_MAG:
                         c_MagnetList.Add(c);
-                        magCount.text = (magnetList.Count + c_MagnetList.Count).ToString();
                         break;
                     case Consumable.ConsumableType.EXTRALIFE:
                         c_ExtraLifeList.Add(c);
-                        ExtraLifeCount.text = (extraLifeList.Count + c_ExtraLifeList.Count).ToString();
                         break;
                     case Consumable.ConsumableType.INVINCIBILITY:
                         c_InvinciblityList.Add(c);
-                        InvincibleCount.text = (invinciblityList.Count + c_InvinciblityList.Count).ToString();
                         break;
                     case Consumable.ConsumableType.SCORE_MULTIPLAYER:
                         c_ScoreMultiplierList.Add(c);
-                        ScoreMultiCount.text = (scoreMultiplierList.Count + c_ScoreMultiplierList.Count).ToString();
                         break;
                 }
             }
         }
+
+        magCount.text = c_MagnetList.Count.ToString();
+        ExtraLifeCount.text = c_ExtraLifeList.Count.ToString();
+        InvincibleCount.text = c_InvinciblityList.Count.ToString();
+        ScoreMultiCount.text = c_ScoreMultiplierList.Count.ToString();
     }
     void InitButton()
     {
         magnetPowerUp.onClick.AddListener(delegate
         {
-            if (c_MagnetList.Count>0)
+            if (c_MagnetList.Count > 0)
             {
                 var c_mag = Instantiate(c_MagnetList[0], transform);
                 UseConsumable(c_mag.GetComponent<Consumable>());
                 PlayerData.instance.Consume(c_mag.GetComponent<Consumable>().GetConsumableType());
                 c_MagnetList.RemoveAt(0);
             }
-            else
-            {
-                var mag = Instantiate(magnetList[0].gameObject, transform);
-                UseConsumable(mag.GetComponent<Consumable>());
-                UpdateAssetsFromGame(mag.GetComponent<Consumable>().GetConsumableId().ToString());
-                PlayerData.instance.Consume(mag.GetComponent<Consumable>().GetConsumableType());
-                magnetList.RemoveAt(0);
-            }
-          
-            magCount.text = (magnetList.Count + c_MagnetList.Count).ToString();
+
+            magCount.text = c_MagnetList.Count.ToString();
         });
 
         extraLifePowerUp.onClick.AddListener(delegate
@@ -280,37 +235,21 @@ public class CharacterInputController : MonoBehaviour
                 PlayerData.instance.Consume(c_extraLifeList.GetComponent<Consumable>().GetConsumableType());
                 c_ExtraLifeList.RemoveAt(0);
             }
-            else
-            {
-                var extraLife = Instantiate(extraLifeList[0].gameObject, transform);
-                UseConsumable(extraLife.GetComponent<Consumable>());
-                UpdateAssetsFromGame(extraLife.GetComponent<Consumable>().GetConsumableId().ToString());
-                PlayerData.instance.Consume(extraLife.GetComponent<Consumable>().GetConsumableType());
-                extraLifeList.RemoveAt(0);
-            }
-          
-            ExtraLifeCount.text = (extraLifeList.Count + c_ExtraLifeList.Count).ToString();
+
+            ExtraLifeCount.text = c_ExtraLifeList.Count.ToString();
         });
 
         scoreMultiplierPowerup.onClick.AddListener(delegate
         {
-            if (c_ScoreMultiplierList.Count>0)
+            if (c_ScoreMultiplierList.Count > 0)
             {
                 var c_scoreMulti = Instantiate(c_ScoreMultiplierList[0], transform);
                 UseConsumable(c_scoreMulti.GetComponent<Consumable>());
                 PlayerData.instance.Consume(c_scoreMulti.GetComponent<Consumable>().GetConsumableType());
                 c_ScoreMultiplierList.RemoveAt(0);
             }
-            else
-            {
-                var scoreMulti = Instantiate(scoreMultiplierList[0].gameObject, transform);
-                UseConsumable(scoreMulti.GetComponent<Consumable>());
-                UpdateAssetsFromGame(scoreMulti.GetComponent<Consumable>().GetConsumableId().ToString());
-                PlayerData.instance.Consume(scoreMulti.GetComponent<Consumable>().GetConsumableType());
-                scoreMultiplierList.RemoveAt(0);
-            }
-          
-            ScoreMultiCount.text = (scoreMultiplierList.Count + c_ScoreMultiplierList.Count).ToString();
+
+            ScoreMultiCount.text = c_ScoreMultiplierList.Count.ToString();
         });
 
         invinciblityPowerUp.onClick.AddListener(delegate
@@ -322,23 +261,15 @@ public class CharacterInputController : MonoBehaviour
                 PlayerData.instance.Consume(c_invinciblity.GetComponent<Consumable>().GetConsumableType());
                 c_InvinciblityList.RemoveAt(0);
             }
-            else
-            {
-                var Invincible = Instantiate(invinciblityList[0].gameObject, transform);
-                UseConsumable(Invincible.GetComponent<Consumable>());
-                UpdateAssetsFromGame(Invincible.GetComponent<Consumable>().GetConsumableId().ToString());
-                PlayerData.instance.Consume(Invincible.GetComponent<Consumable>().GetConsumableType());
-                invinciblityList.RemoveAt(0);
-            }
-          
-            InvincibleCount.text = (invinciblityList.Count + c_InvinciblityList.Count).ToString();
+
+            InvincibleCount.text = c_InvinciblityList.Count.ToString();
         });
     }
 
 
     private void FixedUpdate()
     {
-        if ((magnetList.Count + c_MagnetList.Count) !=0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
+        if (c_MagnetList.Count != 0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
         {
             magnetPowerUp.interactable = true;
         }
@@ -346,8 +277,8 @@ public class CharacterInputController : MonoBehaviour
         {
             magnetPowerUp.interactable = false;
         }
-        
-        if ((extraLifeList.Count + c_ExtraLifeList.Count) != 0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
+
+        if (c_ExtraLifeList.Count != 0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
         {
             extraLifePowerUp.interactable = true;
         }
@@ -355,8 +286,8 @@ public class CharacterInputController : MonoBehaviour
         {
             extraLifePowerUp.interactable = false;
         }
-        
-        if ((invinciblityList.Count + c_InvinciblityList.Count)!=0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
+
+        if (c_InvinciblityList.Count != 0 && m_ActiveConsumables.Count == 0 && PlayerData.instance.tutorialDone == true)
         {
             invinciblityPowerUp.interactable = true;
         }
@@ -364,8 +295,8 @@ public class CharacterInputController : MonoBehaviour
         {
             invinciblityPowerUp.interactable = false;
         }
-        
-        if ((scoreMultiplierList.Count + c_ScoreMultiplierList.Count) != 0 && m_ActiveConsumables.Count == 0 &&
+
+        if (c_ScoreMultiplierList.Count != 0 && m_ActiveConsumables.Count == 0 &&
             PlayerData.instance.tutorialDone == true)
         {
             scoreMultiplierPowerup.interactable = true;
@@ -743,37 +674,7 @@ public class CharacterInputController : MonoBehaviour
 
 
     #region Update Used Assets
-
-    internal void UpdateAssetsFromGame(string assetId)
-    {
-        string url = EndPoint.UpdateUserAssets();
-        UpdateAsset updateAsset = new UpdateAsset()
-        {
-            assetId = assetId,
-            Status = false
-        };
-
-        string json = updateAsset.CallUTFSerialization();
-
-        string loginToken = LoginManager.instance.loginResponseData.data.jwtToken;
-        Dictionary<string, string> customHeader = new Dictionary<string, string>();
-        customHeader.Add("token", loginToken);
-
-        this.CallPutAPI(url, json, delegate(UnityWebRequest www, string payload)
-        {
-            if (www.error != null)
-            {
-                this.Log($"Error Found in update Asset api {www.error}");
-            }
-            else
-            {
-                string resp = www.downloadHandler.text;
-                this.Log($"UpdateAsset {resp}");
-                ProfileAndShopManager.instance.GetGameAssetsByUser();
-            }
-        }, customHeader: customHeader);
-    }
-
+    // Online assets update disabled.
     #endregion
 
     #endregion

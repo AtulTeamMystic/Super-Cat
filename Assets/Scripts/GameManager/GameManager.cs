@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Globalization;
@@ -168,66 +168,38 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         GetPlayerEssentials();
-        openTransactionPanel.onClick.AddListener(OpenTransacton);
-        closeTransactionPanel.onClick.AddListener(CloseTransacton);
+        if (openTransactionPanel != null) openTransactionPanel.onClick.AddListener(OpenTransacton);
+        if (closeTransactionPanel != null) closeTransactionPanel.onClick.AddListener(CloseTransacton);
 
-        foreach (var s in ProfileAndShopManager.instance._userCoins.data)
-        {
-            PlayerData.instance.coins = s.totalCount;
-            PlayerData.instance.Save();
-        }
-
-        LogOutButton.onClick.AddListener(delegate
-        {
-            PlayerPrefs.DeleteAll();
-            SceneManager.LoadScene("start");
-        });
+        if (TransactionPanel != null) TransactionPanel.SetActive(false);
+        if (openTransactionPanel != null) openTransactionPanel.gameObject.SetActive(false);
+        if (LogOutButton != null) LogOutButton.gameObject.SetActive(false);
     }
 
     internal void GetPlayerEssentials()
     {
-        double gspBalance = ProfileAndShopManager.instance._profileData.data.gspBalance;
-        gspBalance = Math.Floor(gspBalance * 100) / 100;
-        string formattedGspBalance = gspBalance.ToString("R");
-
         _profileUi.coinCount.text = PlayerData.instance.coins.ToString();
-        _profileUi.playerName.text = ProfileAndShopManager.instance._profileData.data.userName;
-        _profileUi.gspCount.text = formattedGspBalance;
+        _profileUi.playerName.text = PlayerData.instance.previousName;
+        if (_profileUi.gspCount != null)
+        {
+            _profileUi.gspCount.text = "0";
+        }
         AddTransactions();
     }
 
 
     internal void AddTransactions()
     {
-
-        if (ProfileAndShopManager.instance.userAssetData.data.Count == 0)
+        if (NoTransactionFoundText != null)
         {
             NoTransactionFoundText.gameObject.SetActive(true);
+            NoTransactionFoundText.text = "No Transactions Found";
         }
 
-        if (ProfileAndShopManager.instance.userAssetData.data.Count != 0)
+        foreach (Transform item in transactionPrefabParent)
         {
-            NoTransactionFoundText.gameObject.SetActive(false);
-            foreach (Transform item in transactionPrefabParent)
-            {
-                Destroy(item.gameObject);
-            }
+            Destroy(item.gameObject);
         }
-        if (ProfileAndShopManager.instance.userAssetData.data.Count != 0)
-        {
-            var sortedTransactions = ProfileAndShopManager.instance.userAssetData.data
-                .SelectMany(s => s.assetdetails.Select(t => new { AssetName = s.assetName, Price = s.price, TransactionTime = DateTime.Parse(t.transactionTime, null, DateTimeStyles.RoundtripKind).ToLocalTime() }))
-                .OrderByDescending(t => t.TransactionTime);
-
-            foreach (var t in sortedTransactions)
-            {
-                GameObject transactionHistoryData = Instantiate(transactionPrefab, transactionPrefabParent);
-                transactionHistoryData.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = t.AssetName;
-                transactionHistoryData.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = t.Price.ToString();
-                transactionHistoryData.transform.GetChild(2).gameObject.GetComponent<TMP_Text>().text = t.TransactionTime.ToString();
-            }
-        }
-
     }
 
     internal void OpenTransacton()
