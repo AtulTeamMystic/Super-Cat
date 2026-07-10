@@ -1,5 +1,16 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.google.ads.mobile",
+        "com.google.external-dependency-manager"
+      ]
+    }
+  ],
   "dependencies": {
+    "com.google.ads.mobile": "9.1.0",
     "com.termway.ide.antigravity": "file:com.termway.ide.antigravity",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",

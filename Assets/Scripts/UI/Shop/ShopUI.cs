@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
-#if UNITY_ADS
-using UnityEngine.Advertisements;
-#endif
+// Removed legacy Unity Ads import
 #if UNITY_ANALYTICS
 using UnityEngine.Analytics;
 #endif
@@ -28,9 +26,7 @@ public class ShopUI : MonoBehaviour
 
     protected const int k_CheatCoins = 1000000;
     protected const int k_CheatPremium = 1000;
-#if UNITY_ADS
     protected const int k_AdRewardCoins = 100;
-#endif
 
 	void Start ()
     {
@@ -115,32 +111,25 @@ public class ShopUI : MonoBehaviour
 		PlayerData.instance.Save();
 	}
 
-#if UNITY_ADS
     public void ShowRewardedAd()
     {
-        if (Advertisement.IsReady("rewardedVideo"))
+        if (AdMobManager.instance.IsRewardedAdReady())
         {
-            var options = new ShowOptions { resultCallback = HandleShowResult };
-            Advertisement.Show("rewardedVideo", options);
+            AdMobManager.instance.ShowRewardedAd(
+                onRewardEarned: () => {
+                    Debug.Log("The ad was successfully shown.");
+                    PlayerData.instance.coins += k_AdRewardCoins;
+                    PlayerData.instance.Save();
+                    LoadoutState loadoutState = GameManager.instance.topState as LoadoutState;
+                    if(loadoutState != null)
+                    {
+                        loadoutState.Refresh();
+                    }
+                },
+                onAdClosed: () => {
+                    // Do nothing
+                }
+            );
         }
     }
-
-    private void HandleShowResult(ShowResult result)
-    {
-        switch (result)
-        {
-            case ShowResult.Finished:
-                Debug.Log("The ad was successfully shown.");
-                PlayerData.instance.coins += k_AdRewardCoins;
-                PlayerData.instance.Save();
-                break;
-            case ShowResult.Skipped:
-                Debug.Log("The ad was skipped before reaching the end.");
-                break;
-            case ShowResult.Failed:
-                Debug.LogError("The ad failed to be shown.");
-                break;
-        }
-    }
-#endif
 }

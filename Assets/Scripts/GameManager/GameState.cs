@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-#if UNITY_ADS
-using UnityEngine.Advertisements;
-#endif
+// Removed legacy Unity Ads import
 #if UNITY_ANALYTICS
 using UnityEngine.Analytics;
 #endif
@@ -103,6 +101,7 @@ public class GameState : AState
 
         m_AdsInitialised = false;
         m_GameoverSelectionDone = false;
+        AdMobManager.instance.LoadRewardedAd();
 
         StartGame();
     }
@@ -185,24 +184,15 @@ public class GameState : AState
         if (m_Finished)
         {
             //if we are finished, we check if advertisement is ready, allow to disable the button until it is ready
-#if UNITY_ADS
-            if (!trackManager.isTutorial && !m_AdsInitialised && Advertisement.IsReady(adsPlacementId))
+            if (!trackManager.isTutorial && !m_AdsInitialised && AdMobManager.instance.IsRewardedAdReady())
             {
                 adsForLifeButton.SetActive(true);
                 m_AdsInitialised = true;
-#if UNITY_ANALYTICS
-                AnalyticsEvent.AdOffer(adsRewarded, adsNetwork, adsPlacementId, new Dictionary<string, object>
-            {
-                { "level_index", PlayerData.instance.rank },
-                { "distance", TrackManager.instance == null ? 0 : TrackManager.instance.worldDistance },
-            });
-#endif
             }
-            else if(trackManager.isTutorial || !m_AdsInitialised)
+            else if (trackManager.isTutorial || !m_AdsInitialised)
+            {
                 adsForLifeButton.SetActive(false);
-#else
-            adsForLifeButton.SetActive(false); //Ads is disabled
-#endif
+            }
 
             return;
         }
@@ -460,62 +450,17 @@ public class GameState : AState
 
         m_GameoverSelectionDone = true;
 
-#if UNITY_ADS
-        if (Advertisement.IsReady(adsPlacementId))
-        {
-#if UNITY_ANALYTICS
-            AnalyticsEvent.AdStart(adsRewarded, adsNetwork, adsPlacementId, new Dictionary<string, object>
+        AdMobManager.instance.ShowRewardedAd(
+            onRewardEarned: () =>
             {
-                { "level_index", PlayerData.instance.rank },
-                { "distance", TrackManager.instance == null ? 0 : TrackManager.instance.worldDistance },
-            });
-#endif
-            var options = new ShowOptions { resultCallback = HandleShowResult };
-            Advertisement.Show(adsPlacementId, options);
-        }
-        else
-        {
-#if UNITY_ANALYTICS
-            AnalyticsEvent.AdSkip(adsRewarded, adsNetwork, adsPlacementId, new Dictionary<string, object> {
-                { "error", Advertisement.GetPlacementState(adsPlacementId).ToString() }
-            });
-#endif
-        }
-#else
-		GameOver();
-#endif
-    }
-
-    //=== AD
-#if UNITY_ADS
-
-    private void HandleShowResult(ShowResult result)
-    {
-        switch (result)
-        {
-            case ShowResult.Finished:
-#if UNITY_ANALYTICS
-                AnalyticsEvent.AdComplete(adsRewarded, adsNetwork, adsPlacementId);
-#endif
                 SecondWind();
-                break;
-            case ShowResult.Skipped:
-                Debug.Log("The ad was skipped before reaching the end.");
-#if UNITY_ANALYTICS
-                AnalyticsEvent.AdSkip(adsRewarded, adsNetwork, adsPlacementId);
-#endif
-                break;
-            case ShowResult.Failed:
-                Debug.LogError("The ad failed to be shown.");
-#if UNITY_ANALYTICS
-                AnalyticsEvent.AdSkip(adsRewarded, adsNetwork, adsPlacementId, new Dictionary<string, object> {
-                    { "error", "failed" }
-                });
-#endif
-                break;
-        }
+            },
+            onAdClosed: () =>
+            {
+                GameOver();
+            }
+        );
     }
-#endif
 
 
     void TutorialCheckObstacleClear()
