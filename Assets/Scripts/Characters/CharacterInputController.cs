@@ -404,7 +404,7 @@ public class CharacterInputController : MonoBehaviour
     {
         tutorialWaitingForValidation = currentTutorialLevel != tutorialLevel;
 
-        return (!TrackManager.instance.isTutorial || currentTutorialLevel >= tutorialLevel);
+        return (!trackManager.isTutorial || currentTutorialLevel >= tutorialLevel);
     }
 
     private void ResolveSwipe(Vector2 diff)

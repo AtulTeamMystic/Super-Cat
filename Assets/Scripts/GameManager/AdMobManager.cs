@@ -32,6 +32,8 @@ public class AdMobManager : MonoBehaviour
     private bool _isInitializing = false;
     private bool _isInitialized = false;
 
+    public bool IsShowingAd { get; private set; } = false;
+
     private Action _onRewardEarnedCallback;
     private Action _onAdClosedCallback;
     private bool _rewardEarned;
@@ -56,7 +58,7 @@ public class AdMobManager : MonoBehaviour
         _isInitializing = true;
 
         Debug.Log("AdMobManager: Initializing Google Mobile Ads SDK...");
-        
+
         // Set to true to marshal events to main thread
         MobileAds.RaiseAdEventsOnUnityMainThread = true;
 
@@ -65,7 +67,7 @@ public class AdMobManager : MonoBehaviour
             _isInitialized = true;
             _isInitializing = false;
             Debug.Log("AdMobManager: Google Mobile Ads SDK Initialized.");
-            
+
             // Load the first ad
             LoadRewardedAd();
         });
@@ -106,6 +108,7 @@ public class AdMobManager : MonoBehaviour
     {
         if (IsRewardedAdReady())
         {
+            IsShowingAd = true;
             _rewardEarned = false;
             _onRewardEarnedCallback = onRewardEarned;
             _onAdClosedCallback = onAdClosed;
@@ -130,21 +133,35 @@ public class AdMobManager : MonoBehaviour
         ad.OnAdFullScreenContentClosed += () =>
         {
             Debug.Log("AdMobManager: Rewarded ad closed.");
-            if (!_rewardEarned)
-            {
-                _onAdClosedCallback?.Invoke();
-            }
-            LoadRewardedAd();
+            StartCoroutine(DelayClosedCallback());
         };
 
         ad.OnAdFullScreenContentFailed += (AdError error) =>
         {
             Debug.LogError("AdMobManager: Rewarded ad failed to show: " + error);
-            if (!_rewardEarned)
-            {
-                _onAdClosedCallback?.Invoke();
-            }
-            LoadRewardedAd();
+            StartCoroutine(DelayFailedCallback());
         };
+    }
+
+    private System.Collections.IEnumerator DelayClosedCallback()
+    {
+        yield return null; // Wait 1 frame for any pending reward callbacks to execute
+        IsShowingAd = false;
+        if (!_rewardEarned)
+        {
+            _onAdClosedCallback?.Invoke();
+        }
+        LoadRewardedAd();
+    }
+
+    private System.Collections.IEnumerator DelayFailedCallback()
+    {
+        yield return null; // Wait 1 frame for any pending reward callbacks to execute
+        IsShowingAd = false;
+        if (!_rewardEarned)
+        {
+            _onAdClosedCallback?.Invoke();
+        }
+        LoadRewardedAd();
     }
 }

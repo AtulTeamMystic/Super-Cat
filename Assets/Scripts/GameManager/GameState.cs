@@ -284,7 +284,8 @@ public class GameState : AState
     public void Pause(bool displayMenu = true)
 	{
 		//check if we aren't finished OR if we aren't already in pause (as that would mess states)
-		if (m_Finished || AudioListener.pause == true)
+		//Or if we are currently displaying an ad to prevent focus-loss pause triggers
+		if (m_Finished || AudioListener.pause == true || AdMobManager.instance.IsShowingAd)
 			return;
 
 		AudioListener.pause = true;
