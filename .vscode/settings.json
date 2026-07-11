@@ -4,5 +4,9 @@
     "omnisharp.useModernNet": true,
     "omnisharp.enableRoslynAnalyzers": false,
     "omnisharp.enableEditorConfigSupport": true,
-    "csharp.suppressDotnetInstallWarning": true
+    "csharp.suppressDotnetInstallWarning": true,
+    "files.exclude": {
+        "**/*.csproj": true,
+        "**/*.sln": true
+    }
 }
