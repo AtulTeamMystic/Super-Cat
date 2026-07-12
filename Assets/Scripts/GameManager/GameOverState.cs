@@ -175,16 +175,21 @@ public class GameOverState : AState
 
     protected void FinishRun()
     {
-        /*if (miniLeaderboard.playerEntry.inputName.text == "")
+        string playerName = PlayerData.instance.previousName;
+        if (miniLeaderboard != null && miniLeaderboard.playerEntry != null && miniLeaderboard.playerEntry.inputName != null)
         {
-            miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
-        }
-        else
-        {
-            PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
+            if (string.IsNullOrEmpty(miniLeaderboard.playerEntry.inputName.text))
+            {
+                miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
+            }
+            else
+            {
+                PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
+            }
+            playerName = miniLeaderboard.playerEntry.inputName.text;
         }
 
-        PlayerData.instance.InsertScore(trackManager.score, miniLeaderboard.playerEntry.inputName.text);*/
+        PlayerData.instance.InsertScore(trackManager.score, playerName);
 
         CharacterCollider.DeathEvent de = trackManager.characterController.characterCollider.deathData;
         //register data to analytics
