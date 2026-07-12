@@ -6,7 +6,7 @@ using UnityEngine.Analytics;
 #endif
 using System.Collections.Generic;
 using TMPro;
- 
+
 /// <summary>
 /// state pushed on top of the GameManager when the player dies.
 /// </summary>
@@ -16,11 +16,11 @@ public class GameOverState : AState
     public Canvas canvas;
     public MissionUI missionPopup;
 
-	public AudioClip gameOverTheme;
+    public AudioClip gameOverTheme;
 
-	public Leaderboard miniLeaderboard;
-	public Leaderboard fullLeaderboard;
-	public GameObject HighScoreBg;
+    public Leaderboard miniLeaderboard;
+    public Leaderboard fullLeaderboard;
+    public GameObject HighScoreBg;
     public GameObject addButton;
 
     public TextMeshProUGUI highScoreText;
@@ -40,7 +40,8 @@ public class GameOverState : AState
     {
         if (HighScoreBg != null)
         {
-            LeanTween.scale(HighScoreBg, Vector3.zero, 0.3f).setOnComplete(() => {
+            LeanTween.scale(HighScoreBg, Vector3.zero, 0.3f).setOnComplete(() =>
+            {
                 HighScoreBg.SetActive(false);
             });
         }
@@ -62,26 +63,26 @@ public class GameOverState : AState
             yourScoreText.text = trackManager.score.ToString();
         }
 
-        miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
-		
-		miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
-		miniLeaderboard.Populate();
+        //miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
+
+        //miniLeaderboard.playerEntry.score.text = trackManager.score.ToString();
+        //miniLeaderboard.Populate();
 
         if (PlayerData.instance.AnyMissionComplete())
             StartCoroutine(missionPopup.Open());
         else
             missionPopup.gameObject.SetActive(false);
 
-		CreditCoins();
+        CreditCoins();
 
-		if (MusicPlayer.instance.GetStem(0) != gameOverTheme)
-		{
+        if (MusicPlayer.instance.GetStem(0) != gameOverTheme)
+        {
             MusicPlayer.instance.SetStem(0, gameOverTheme);
-			StartCoroutine(MusicPlayer.instance.RestartAllStems());
+            StartCoroutine(MusicPlayer.instance.RestartAllStems());
         }
     }
 
-	public override void Exit(AState to)
+    public override void Exit(AState to)
     {
         canvas.gameObject.SetActive(false);
         FinishRun();
@@ -94,20 +95,20 @@ public class GameOverState : AState
 
     public override void Tick()
     {
-        
+
     }
 
-	public void OpenLeaderboard()
-	{
-		fullLeaderboard.forcePlayerDisplay = false;
-		fullLeaderboard.displayPlayer = true;
-		fullLeaderboard.playerEntry.playerName.text = miniLeaderboard.playerEntry.inputName.text;
-		fullLeaderboard.playerEntry.score.text = trackManager.score.ToString();
+    public void OpenLeaderboard()
+    {
+        fullLeaderboard.forcePlayerDisplay = false;
+        fullLeaderboard.displayPlayer = true;
+        fullLeaderboard.playerEntry.playerName.text = miniLeaderboard.playerEntry.inputName.text;
+        fullLeaderboard.playerEntry.score.text = trackManager.score.ToString();
 
-		fullLeaderboard.Open();
+        fullLeaderboard.Open();
     }
 
-	public void GoToStore()
+    public void GoToStore()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("shop", UnityEngine.SceneManagement.LoadSceneMode.Additive);
     }
@@ -115,12 +116,15 @@ public class GameOverState : AState
 
     public void GoToLoadout()
     {
-        trackManager.isRerun = false; 
+        trackManager.isRerun = false;
         Camera.main.transform.position = new Vector3(0, 5.3f, -3);
-		manager.SwitchState("Loadout");
-		Debug.Log("Go to Loadout" + PlayerData.instance.coins);
+        manager.SwitchState("Loadout");
+        Debug.Log("Go to Loadout" + PlayerData.instance.coins);
         manager.GetPlayerEssentials();
 
+        //Destroy The Character
+        CharacterInputController chrCtrl = trackManager.characterController;
+        Destroy(chrCtrl.character.gameObject);
     }
 
     public void RunAgain()
@@ -130,8 +134,8 @@ public class GameOverState : AState
     }
 
     protected void CreditCoins()
-	{
-		PlayerData.instance.Save();
+    {
+        PlayerData.instance.Save();
 
 #if UNITY_ANALYTICS // Using Analytics Standard Events v0.3.0
         var transactionId = System.Guid.NewGuid().ToString();
@@ -166,21 +170,21 @@ public class GameOverState : AState
                 transactionId
             );
         }
-#endif 
-	}
+#endif
+    }
 
-	protected void FinishRun()
+    protected void FinishRun()
     {
-		if(miniLeaderboard.playerEntry.inputName.text == "")
-		{
-			miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
-		}
-		else
-		{
-			PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
-		}
+        /*if (miniLeaderboard.playerEntry.inputName.text == "")
+        {
+            miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
+        }
+        else
+        {
+            PlayerData.instance.previousName = miniLeaderboard.playerEntry.inputName.text;
+        }
 
-        PlayerData.instance.InsertScore(trackManager.score, miniLeaderboard.playerEntry.inputName.text );
+        PlayerData.instance.InsertScore(trackManager.score, miniLeaderboard.playerEntry.inputName.text);*/
 
         CharacterCollider.DeathEvent de = trackManager.characterController.characterCollider.deathData;
         //register data to analytics
