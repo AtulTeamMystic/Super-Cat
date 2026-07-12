@@ -90,6 +90,15 @@ public class AdMobManager : MonoBehaviour
         if (_isInitializing || _isInitialized) return;
         _isInitializing = true;
 
+        Debug.Log("AdMobManager: Configuring global AdMob settings (Max Content Rating = G)...");
+
+        // Force maximum ad content rating to General (family/kid friendly, strictly blocks mature/18+ ads)
+        RequestConfiguration requestConfiguration = new RequestConfiguration
+        {
+            MaxAdContentRating = MaxAdContentRating.G
+        };
+        MobileAds.SetRequestConfiguration(requestConfiguration);
+
         Debug.Log("AdMobManager: Initializing Google Mobile Ads SDK...");
 
         // Set to true to marshal events to main thread
