@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Analytics;
 #endif
 using System.Collections.Generic;
+using TMPro;
  
 /// <summary>
 /// state pushed on top of the GameManager when the player dies.
@@ -22,19 +23,44 @@ public class GameOverState : AState
 	public GameObject HighScoreBg;
     public GameObject addButton;
 
+    public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI yourScoreText;
+
     private void OnEnable()
     {
-	    LeanTween.scale(HighScoreBg, new Vector3(1, 1, 1), 0.3f);
+        if (HighScoreBg != null)
+        {
+            HighScoreBg.SetActive(true);
+            HighScoreBg.transform.localScale = Vector3.zero;
+            LeanTween.scale(HighScoreBg, Vector3.one, 0.3f);
+        }
     }
 
     private void OnDisable()
     {
-	    LeanTween.scale(HighScoreBg, new Vector3(0, 0, 0), 0.3f);
+        if (HighScoreBg != null)
+        {
+            LeanTween.scale(HighScoreBg, Vector3.zero, 0.3f).setOnComplete(() => {
+                HighScoreBg.SetActive(false);
+            });
+        }
     }
 
     public override void Enter(AState from)
     {
         canvas.gameObject.SetActive(true);
+
+        int previousHighScore = (PlayerData.instance.highscores.Count > 0) ? PlayerData.instance.highscores[0].score : 0;
+        int displayHighScore = Mathf.Max(previousHighScore, trackManager.score);
+
+        if (highScoreText != null)
+        {
+            highScoreText.text = displayHighScore.ToString();
+        }
+        if (yourScoreText != null)
+        {
+            yourScoreText.text = trackManager.score.ToString();
+        }
 
         miniLeaderboard.playerEntry.inputName.text = PlayerData.instance.previousName;
 		

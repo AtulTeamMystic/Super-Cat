@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -14,8 +14,10 @@ public class MissionUI : MonoBehaviour
     {
         gameObject.SetActive(true);
         LeanTween.scale(gameObject, new Vector3(1, 1, 1), 0.3f);
-        foreach (Transform t in missionPlace)
-            Addressables.ReleaseInstance(t.gameObject);
+        for (int i = missionPlace.childCount - 1; i >= 0; i--)
+        {
+            Addressables.ReleaseInstance(missionPlace.GetChild(i).gameObject);
+        }
 
         for(int i = 0; i < 3; ++i)
         {

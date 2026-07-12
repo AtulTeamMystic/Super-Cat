@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -288,15 +288,39 @@ public class LoadoutState : AState
 
                     accessoriesSelector.gameObject.SetActive(m_OwnedAccesories.Count > 0);
 
-                    AsyncOperationHandle op = Addressables.InstantiateAsync(c.characterName);
+                    string skinName = PlayerData.instance.characters[PlayerData.instance.usedCharacter];
+                    Debug.Log("LoadoutState: Loading skin named '" + skinName + "'");
+
+                    if (SkinDatabase.instance == null)
+                    {
+                        Debug.LogWarning("LoadoutState: SkinDatabase.instance is null! Ensure your Skins database asset is assigned in the GameManager inspector.");
+                    }
+
+                    Skin skin = SkinDatabase.GetSkin(skinName);
+                    if (skin == null)
+                    {
+                        Debug.LogWarning("LoadoutState: Skin config not found for name '" + skinName + "' in the database! Please check your Skins database asset configuration.");
+                    }
+                    else if (skin.texture == null)
+                    {
+                        Debug.LogWarning("LoadoutState: Skin '" + skinName + "' was found, but its Texture2D is null! Ensure you assigned the texture in the Skins Generator window.");
+                    }
+
+                    string basePrefab = (skin != null && SkinDatabase.instance != null) ? SkinDatabase.instance.basePrefabName : c.characterName;
+
+                    AsyncOperationHandle op = Addressables.InstantiateAsync(basePrefab);
                     yield return op;
                     if (op.Result == null || !(op.Result is GameObject))
                     {
-                        Debug.LogWarning(string.Format("Unable to load character {0}.", c.characterName));
+                        Debug.LogWarning(string.Format("Unable to load character {0}.", basePrefab));
                         yield break;
                     }
-
                     newChar = op.Result as GameObject;
+                    if (skin != null && skin.texture != null)
+                    {
+                        SkinDatabase.ApplySkinTexture(newChar, skin.texture);
+                    }
+
                     Helpers.SetRendererLayerRecursive(newChar, k_UILayer);
                     newChar.transform.SetParent(charPosition, false);
                     newChar.transform.rotation = k_FlippedYAxisRotation;
@@ -307,7 +331,7 @@ public class LoadoutState : AState
 
                     m_Character = newChar;
                     //Debug.Log(" m_Character.transform.rotation " +    m_Character.transform.rotation);
-                    charNameDisplay.text = c.characterName;
+                    charNameDisplay.text = skinName;
 
                     m_Character.transform.localPosition = Vector3.right * 1000;
                     //animator will take a frame to initialize, during which the character will be in a T-pose.

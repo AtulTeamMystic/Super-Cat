@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746ae94b58dd41f44866f173e1a558e3, type: 3}
+  m_Name: Skins
+  m_EditorClassIdentifier: 
+  basePrefabName: Trash Cat
+  skins:
+  - skinName: Milo
+    cost: 0
+    icon: {fileID: 21300000, guid: d6e7c02f29d63354d98bbde5fd93e16a, type: 3}
+    texture: {fileID: 2800000, guid: 94d2049459d51ce42aae1ef04e766ef5, type: 3}
+  - skinName: Leo
+    cost: 1800
+    icon: {fileID: 21300000, guid: ecb8b2b7b5c39274da79ebdb5328f919, type: 3}
+    texture: {fileID: 2800000, guid: c56aff49e8046804a871c25e7576bd15, type: 3}
+  - skinName: Ollie
+    cost: 3800
+    icon: {fileID: 21300000, guid: 8ba170bb22fe445418eeb341c46ff64c, type: 3}
+    texture: {fileID: 2800000, guid: 8b7246edcfe47b94e981a994a7c6686e, type: 3}
+  - skinName: Ginger
+    cost: 5600
+    icon: {fileID: 21300000, guid: f11ba291334ff2f46974e2a05c6be9ec, type: 3}
+    texture: {fileID: 2800000, guid: 59879bb35f8af504788559cf1086415b, type: 3}
+  - skinName: Tom
+    cost: 10800
+    icon: {fileID: 21300000, guid: 181d1d3ffa5d28249b1952e86dc2e9da, type: 3}
+    texture: {fileID: 2800000, guid: 08cc8ae9eb1fb4947b2f85fb7227726b, type: 3}
+  - skinName: Mochi
+    cost: 20000
+    icon: {fileID: 21300000, guid: e02b7c22fb7b0d747af9514d81cd7a61, type: 3}
+    texture: {fileID: 2800000, guid: 34f04abb063755e429049baae5775327, type: 3}
+  - skinName: Neko
+    cost: 32000
+    icon: {fileID: 21300000, guid: fb575e40ec547094a86ab3ae4e5e05bd, type: 3}
+    texture: {fileID: 2800000, guid: 4f07296281e908e489ce3e61c61f5796, type: 3}
+  - skinName: Rusty
+    cost: 42000
+    icon: {fileID: 21300000, guid: 2c276a437756ab244a93ac16f4dbc200, type: 3}
+    texture: {fileID: 2800000, guid: b9afb0562aab8ad438121d6ed3959988, type: 3}
+  - skinName: Jasper
+    cost: 53000
+    icon: {fileID: 21300000, guid: ee36ce924bca49c49a2139cfa2aff96f, type: 3}
+    texture: {fileID: 2800000, guid: e889f5bf02632fd488cefe6d8d67a46c, type: 3}
+  - skinName: Coco
+    cost: 65000
+    icon: {fileID: 21300000, guid: 170983f0b499f9942aeab7e0fff9d77b, type: 3}
+    texture: {fileID: 2800000, guid: fbc058cfe7a59474086343e27a00134b, type: 3}

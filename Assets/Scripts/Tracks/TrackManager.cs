@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -199,16 +199,40 @@ public class TrackManager : MonoBehaviour
 
             //Addressables 1.0.1-preview
             // Spawn the player
-            var op = Addressables.InstantiateAsync(PlayerData.instance.characters[PlayerData.instance.usedCharacter],
+            string skinName = PlayerData.instance.characters[PlayerData.instance.usedCharacter];
+            Debug.Log("TrackManager: Loading skin named '" + skinName + "'");
+
+            if (SkinDatabase.instance == null)
+            {
+                Debug.LogWarning("TrackManager: SkinDatabase.instance is null! Ensure your Skins database asset is assigned in the GameManager inspector.");
+            }
+
+            Skin skin = SkinDatabase.GetSkin(skinName);
+            if (skin == null)
+            {
+                Debug.LogWarning("TrackManager: Skin config not found for name '" + skinName + "' in the database! Please check your Skins database asset configuration.");
+            }
+            else if (skin.texture == null)
+            {
+                Debug.LogWarning("TrackManager: Skin '" + skinName + "' was found, but its Texture2D is null! Ensure you assigned the texture in the Skins Generator window.");
+            }
+
+            string basePrefab = (skin != null && SkinDatabase.instance != null) ? SkinDatabase.instance.basePrefabName : skinName;
+
+            var op = Addressables.InstantiateAsync(basePrefab,
                 Vector3.zero,
                 Quaternion.identity);
             yield return op;
             if (op.Result == null || !(op.Result is GameObject))
             {
-                Debug.LogWarning(string.Format("Unable to load character {0}.", PlayerData.instance.characters[PlayerData.instance.usedCharacter]));
+                Debug.LogWarning(string.Format("Unable to load character {0}.", basePrefab));
                 yield break;
             }
             Character player = op.Result.GetComponent<Character>();
+            if (skin != null && skin.texture != null)
+            {
+                SkinDatabase.ApplySkinTexture(op.Result, skin.texture);
+            }
 
             player.SetupAccesory(PlayerData.instance.usedAccessory);
 

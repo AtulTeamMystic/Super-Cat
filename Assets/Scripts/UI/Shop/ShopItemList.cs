@@ -57,18 +57,14 @@ public class ShopItemList : ShopList
                                 StartCoroutine(ShopUIManager.instance.ShowBalanceWarnings());
                                 return;
                             }
-                            ShopUIManager.instance.assetName.text = c.GetConsumableName();
                             DebugLog.Log($"Buying '{c.GetConsumableName()}' with coins");
-                            ShopUIManager.instance.OpenCoinBuyConfirmationPanel(delegate {
-                                Buy(c);
-                                ShopUIManager.instance.CloseCoinBuyConfirmationPanel();
-                                onCoinShop?.Invoke();
-                                StartCoroutine(UpdateItems(itm,c));
-                            });
+                            Buy(c);
+                            onCoinShop?.Invoke();
+                            AddingItems(itm, c);
                         });
                     
-                    m_RefreshCallback += delegate () { StartCoroutine(UpdateItems(itm, c));};
-                   StartCoroutine(UpdateItems(itm, c));
+                    m_RefreshCallback += delegate () { AddingItems(itm, c); };
+                    AddingItems(itm, c);
                 };
             }
         }
@@ -124,9 +120,8 @@ public class ShopItemList : ShopList
         }
     }
 
-    IEnumerator UpdateItems(ShopItemListItem item, Consumable c)
+    void UpdateItems(ShopItemListItem item, Consumable c)
     {
-        yield return new WaitForSeconds(0.5f);
         AddingItems(item, c);
     }
     public void BuyFromGsp(Consumable c)

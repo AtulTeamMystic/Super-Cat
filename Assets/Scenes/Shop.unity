@@ -4035,7 +4035,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 2094172.1}
+  m_AnchoredPosition: {x: 0, y: 2096223.6}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &901507991
@@ -5924,7 +5924,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -150}
-  m_SizeDelta: {x: 900, y: 1400}
+  m_SizeDelta: {x: 1024, y: 1400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1374068294
 MonoBehaviour:
@@ -6359,6 +6359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   consumableDatabase: {fileID: 11400000, guid: 5d316f81231c9964dadda0b50ca7ae6b, type: 2}
+  skinDatabase: {fileID: 0}
   itemList: {fileID: 451050336}
   characterList: {fileID: 1374068294}
   accessoriesList: {fileID: 540240814}

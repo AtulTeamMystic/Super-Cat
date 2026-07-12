@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 
@@ -10,16 +10,16 @@ public class ShopCharacterList : ShopList
 {
     public override void Populate()
     {
-		m_RefreshCallback = null;
+        m_RefreshCallback = null;
         foreach (Transform t in listRoot)
         {
             Destroy(t.gameObject);
         }
 
-        foreach(KeyValuePair<string, Character> pair in CharacterDatabase.dictionary)
+        foreach (KeyValuePair<string, Skin> pair in SkinDatabase.dictionary)
         {
-            Character c = pair.Value;
-            if (c != null)
+            Skin skin = pair.Value;
+            if (skin != null)
             {
                 prefabItem.InstantiateAsync().Completed += (op) =>
                 {
@@ -32,77 +32,68 @@ public class ShopCharacterList : ShopList
                     newEntry.transform.SetParent(listRoot, false);
 
                     ShopItemListItem itm = newEntry.GetComponent<ShopItemListItem>();
-
-                    itm.icon.sprite = c.icon;
-                   // itm.nameText.text = c.characterName;
-                   itm.nameText.text = "Super Cat";
-                    itm.pricetext.text = c.cost.ToString();
+                    itm.icon.sprite = skin.icon;
+                    itm.nameText.text = skin.skinName;
+                    itm.pricetext.text = skin.cost.ToString();
 
                     itm.buyButton.image.sprite = itm.buyButtonSprite;
 
-                    if (c.premiumCost > 0)
-                    {
-                       // itm.premiumText.transform.parent.gameObject.SetActive(true);
-                        //itm.premiumText.text = c.premiumCost.ToString();
-                    }
-                    else
-                    {
-                       // itm.premiumText.transform.parent.gameObject.SetActive(false);
-                    }
+                    itm.buyButton.onClick.AddListener(delegate () { Buy(skin); });
 
-                    itm.buyButton.onClick.AddListener(delegate() { Buy(c); });
-
-                    m_RefreshCallback += delegate() { RefreshButton(itm, c); };
-                    RefreshButton(itm, c);
+                    m_RefreshCallback += delegate () { RefreshButton(itm, skin); };
+                    RefreshButton(itm, skin);
                 };
             }
         }
     }
 
-	protected void RefreshButton(ShopItemListItem itm, Character c)
-	{
-		if (c.cost > PlayerData.instance.coins)
-		{
-			itm.buyButton.interactable = false;
-			itm.pricetext.color = Color.red;
-		}
-		else
-		{
-			itm.pricetext.color = Color.white;
-		}
-
-		if (c.premiumCost > PlayerData.instance.premium)
-		{
-			itm.buyButton.interactable = false;
-			//itm.premiumText.color = Color.red;
-		}
-		else
-		{
-			//itm.premiumText.color = Color.black;
-		}
-
-		if (PlayerData.instance.characters.Contains(c.characterName))
-		{
-			itm.buyButton.interactable = false;
-			itm.buyButton.image.sprite = itm.disabledButtonSprite;
-			itm.buyButton.transform.GetChild(0).GetComponent<UnityEngine.UI.Text>().text = "Owned";
-		}
-	}
-
-
-
-	public void Buy(Character c)
+    protected void RefreshButton(ShopItemListItem itm, Skin skin)
     {
-        PlayerData.instance.coins -= c.cost;
-		PlayerData.instance.premium -= c.premiumCost;
-        PlayerData.instance.AddCharacter(c.characterName);
+        if (skin.cost > PlayerData.instance.coins)
+        {
+            itm.buyButton.interactable = false;
+            itm.pricetext.color = new Color(1f, 0.82f, 0f);
+        }
+        else
+        {
+            itm.pricetext.color = new Color(1f, 0.82f, 0f);
+        }
+
+        if (PlayerData.instance.characters.Contains(skin.skinName))
+        {
+            itm.pricetext.color = new Color(1f, 0.82f, 0f);
+            string currentEquippedSkin = PlayerData.instance.characters[PlayerData.instance.usedCharacter];
+            if (currentEquippedSkin == skin.skinName)
+            {
+                itm.buyButton.interactable = false;
+                itm.buyButton.image.sprite = itm.disabledButtonSprite;
+                itm.buyButton.transform.GetChild(0).GetComponent<UnityEngine.UI.Text>().text = "Equipped";
+            }
+            else
+            {
+                itm.buyButton.interactable = true;
+                itm.buyButton.image.sprite = itm.buyButtonSprite;
+                itm.buyButton.transform.GetChild(0).GetComponent<UnityEngine.UI.Text>().text = "Equip";
+
+                itm.buyButton.onClick.RemoveAllListeners();
+                itm.buyButton.onClick.AddListener(delegate () { Equip(skin); });
+            }
+        }
+    }
+
+
+
+    public void Buy(Skin skin)
+    {
+        PlayerData.instance.coins -= skin.cost;
+        PlayerData.instance.AddCharacter(skin.skinName);
         PlayerData.instance.Save();
 
 #if UNITY_ANALYTICS // Using Analytics Standard Events v0.3.0
         var transactionId = System.Guid.NewGuid().ToString();
         var transactionContext = "store";
         var level = PlayerData.instance.rank.ToString();
-        var itemId = c.characterName;
+        var itemId = skin.skinName;
         var itemType = "non_consumable";
         var itemQty = 1;
 
@@ -116,28 +107,14 @@ public class ShopCharacterList : ShopList
             transactionId
         );
         
-        if (c.cost > 0)
+        if (skin.cost > 0)
         {
             AnalyticsEvent.ItemSpent(
                 AcquisitionType.Soft, // Currency type
                 transactionContext,
-                c.cost,
+                skin.cost,
                 itemId,
                 PlayerData.instance.coins, // Balance
-                itemType,
-                level,
-                transactionId
-            );
-        }
-
-        if (c.premiumCost > 0)
-        {
-            AnalyticsEvent.ItemSpent(
-                AcquisitionType.Premium, // Currency type
-                transactionContext,
-                c.premiumCost,
-                itemId,
-                PlayerData.instance.premium, // Balance
                 itemType,
                 level,
                 transactionId
@@ -147,5 +124,28 @@ public class ShopCharacterList : ShopList
 
         // Repopulate to change button accordingly.
         Populate();
+    }
+
+    public void Equip(Skin skin)
+    {
+        int index = PlayerData.instance.characters.IndexOf(skin.skinName);
+        if (index >= 0)
+        {
+            PlayerData.instance.usedCharacter = index;
+            PlayerData.instance.Save();
+        }
+
+        // Repopulate to update all buttons
+        Populate();
+
+        // Refresh main menu model
+        if (GameManager.instance != null)
+        {
+            LoadoutState loadoutState = GameManager.instance.topState as LoadoutState;
+            if (loadoutState != null)
+            {
+                loadoutState.Refresh();
+            }
+        }
     }
 }

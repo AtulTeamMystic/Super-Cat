@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,8 +17,11 @@ public class CharacterDatabase
 
     static public Character GetCharacter(string type)
     {
+        Skin skin = SkinDatabase.GetSkin(type);
+        string lookupName = (skin != null && SkinDatabase.instance != null) ? SkinDatabase.instance.basePrefabName : type;
+
         Character c;
-        if (m_CharactersDict == null || !m_CharactersDict.TryGetValue(type, out c))
+        if (m_CharactersDict == null || !m_CharactersDict.TryGetValue(lookupName, out c))
             return null;
 
         return c;

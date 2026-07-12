@@ -244,7 +244,7 @@ public class PlayerData
         m_Instance.coins = 0;
         m_Instance.premium = 0;
 
-        m_Instance.characters.Add("Trash Cat");
+        m_Instance.characters.Add("Milo");
         m_Instance.themes.Add("Day");
 
         m_Instance.ftueLevel = 0;

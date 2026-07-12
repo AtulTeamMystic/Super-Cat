@@ -11,6 +11,7 @@ using UnityEngine.Analytics;
 public class ShopUI : MonoBehaviour
 {
     public ConsumableDatabase consumableDatabase;
+    public SkinDatabase skinDatabase;
 
     public ShopItemList itemList;
     public ShopCharacterList characterList;
@@ -32,6 +33,10 @@ public class ShopUI : MonoBehaviour
     {
         PlayerData.Create();
         consumableDatabase.Load();
+        if (skinDatabase != null)
+        {
+            skinDatabase.Load();
+        }
         CoroutineHandler.StartStaticCoroutine(CharacterDatabase.LoadDatabase());
         CoroutineHandler.StartStaticCoroutine(ThemeDatabase.LoadDatabase());
 
