@@ -25,14 +25,30 @@ public static class AdMobSettingsSetup
                     var androidAppIdProp = settingsType.GetProperty("GoogleMobileAdsAndroidAppId");
                     var iosAppIdProp = settingsType.GetProperty("GoogleMobileAdsIOSAppId");
                     
-                    if (androidAppIdProp != null)
-                        androidAppIdProp.SetValue(settings, "ca-app-pub-3940256099942544~3347511713");
-                    if (iosAppIdProp != null)
-                        iosAppIdProp.SetValue(settings, "ca-app-pub-3940256099942544~1458002511");
-                        
-                    EditorUtility.SetDirty((UnityEngine.Object)settings);
-                    AssetDatabase.SaveAssets();
-                    Debug.Log("AdMobSettingsSetup: Configured AdMob test app IDs successfully.");
+                    if (androidAppIdProp != null && iosAppIdProp != null)
+                    {
+                        string currentAndroid = (string)androidAppIdProp.GetValue(settings);
+                        string currentIos = (string)iosAppIdProp.GetValue(settings);
+
+                        bool changed = false;
+                        if (string.IsNullOrEmpty(currentAndroid))
+                        {
+                            androidAppIdProp.SetValue(settings, "ca-app-pub-3940256099942544~3347511713");
+                            changed = true;
+                        }
+                        if (string.IsNullOrEmpty(currentIos))
+                        {
+                            iosAppIdProp.SetValue(settings, "ca-app-pub-3940256099942544~1458002511");
+                            changed = true;
+                        }
+
+                        if (changed)
+                        {
+                            EditorUtility.SetDirty((UnityEngine.Object)settings);
+                            AssetDatabase.SaveAssets();
+                            Debug.Log("AdMobSettingsSetup: Configured default AdMob test app IDs successfully.");
+                        }
+                    }
                 }
                 else
                 {

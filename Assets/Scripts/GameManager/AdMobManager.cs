@@ -10,23 +10,32 @@ public class AdMobManager : MonoBehaviour
         {
             if (_instance == null)
             {
-                GameObject go = new GameObject("AdMobManager");
-                _instance = go.AddComponent<AdMobManager>();
-                DontDestroyOnLoad(go);
+                _instance = FindObjectOfType<AdMobManager>();
+                if (_instance == null)
+                {
+                    GameObject go = new GameObject("AdMobManager");
+                    _instance = go.AddComponent<AdMobManager>();
+                    DontDestroyOnLoad(go);
+                }
             }
             return _instance;
         }
     }
     private static AdMobManager _instance;
 
-    [Header("Ad Unit IDs")]
-#if UNITY_ANDROID
-    private string _rewardedAdUnitId = "ca-app-pub-3940256099942544/5224354917";
-#elif UNITY_IPHONE
-    private string _rewardedAdUnitId = "ca-app-pub-3940256099942544/1712485313";
-#else
-    private string _rewardedAdUnitId = "unused";
-#endif
+    [Header("Settings")]
+    [Tooltip("If true, Google Mobile Ads test ad unit IDs will be used instead of production IDs.")]
+    public bool useTestAds = true;
+
+    [Header("Production (Real) Ad Unit IDs")]
+    public string realAndroidAdUnitId = "YOUR_REAL_ANDROID_AD_UNIT_ID";
+    public string realIosAdUnitId = "YOUR_REAL_IOS_AD_UNIT_ID";
+
+    [Header("Test Ad Unit IDs")]
+    [SerializeField]
+    private string testAndroidAdUnitId = "ca-app-pub-3940256099942544/5224354917";
+    [SerializeField]
+    private string testIosAdUnitId = "ca-app-pub-3940256099942544/1712485313";
 
     private RewardedAd _rewardedAd;
     private bool _isInitializing = false;
@@ -37,6 +46,30 @@ public class AdMobManager : MonoBehaviour
     private Action _onRewardEarnedCallback;
     private Action _onAdClosedCallback;
     private bool _rewardEarned;
+
+    public string GetRewardedAdUnitId()
+    {
+        if (useTestAds)
+        {
+#if UNITY_ANDROID
+            return testAndroidAdUnitId;
+#elif UNITY_IPHONE
+            return testIosAdUnitId;
+#else
+            return "unused";
+#endif
+        }
+        else
+        {
+#if UNITY_ANDROID
+            return realAndroidAdUnitId;
+#elif UNITY_IPHONE
+            return realIosAdUnitId;
+#else
+            return "unused";
+#endif
+        }
+    }
 
     private void Awake()
     {
@@ -85,7 +118,8 @@ public class AdMobManager : MonoBehaviour
         Debug.Log("AdMobManager: Loading rewarded ad...");
         var adRequest = new AdRequest();
 
-        RewardedAd.Load(_rewardedAdUnitId, adRequest, (RewardedAd ad, LoadAdError error) =>
+        string adUnitId = GetRewardedAdUnitId();
+        RewardedAd.Load(adUnitId, adRequest, (RewardedAd ad, LoadAdError error) =>
         {
             if (error != null || ad == null)
             {
@@ -93,7 +127,7 @@ public class AdMobManager : MonoBehaviour
                 return;
             }
 
-            Debug.Log("AdMobManager: Rewarded ad loaded successfully.");
+            Debug.Log("AdMobManager: Rewarded ad loaded successfully. AdUnitId: " + adUnitId);
             _rewardedAd = ad;
             RegisterEventHandlers(ad);
         });
